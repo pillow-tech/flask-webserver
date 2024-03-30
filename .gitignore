@@ -1,2 +1,4 @@
 env/*
 src/__pycache__/
+docker_clean.sh
+build.sh
