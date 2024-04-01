@@ -11,11 +11,17 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-      IMAGE_TAG: ${{ steps.docker-image.outputs.IMAGE_TAG }}
+      IMAGE_TAG: ${{ steps.short-sha.outputs.IMAGE_TAG }}
     steps:
 
       - name: Code Checkout
         uses: actions/checkout@v4
+      
+      - name: Set short git commit SHA
+        id: short-sha
+        run: |
+          commitSHA = $(git rev-parse --short ${{ github.sha }})
+          echo "IMAGE_TAG = $commitSHA" >> "$GITHUB_OUTPUT"
       
       - name: Configure AWS
         uses: aws-actions/configure-aws-credentials@v4
@@ -33,9 +39,8 @@ jobs:
         env:
           REGISTRY: ${{steps.login-ecr.outputs.registry }}
           REPOSITORY: simple-flask
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: ${{ steps.short-sha.outputs.IMAGE_TAG }}
         run : |
-            echo "IMAGE_TAG=$IMAGE_TAG" >> "$GITHUB_OUTPUT"
             docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG . 
             docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
