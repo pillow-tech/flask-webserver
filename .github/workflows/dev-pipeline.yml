@@ -20,7 +20,7 @@ jobs:
       - name: Set short git commit SHA
         id: short-sha
         run: |
-          commitSHA = $(git rev-parse --short ${{ github.sha }})
+          commitSHA=$(git rev-parse --short ${{ github.sha }})
           echo "IMAGE_TAG = $commitSHA" >> "$GITHUB_OUTPUT"
       
       - name: Configure AWS
